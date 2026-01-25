@@ -4,11 +4,9 @@
 # Requires: xfce4-genmon-plugin bc curl
 
 ### Change these to suit ##############
-#CITY="Whitby, Ontario"
-CITY="Toronto, Ontario"
-#LAT="43.898"
-LAT="43.6548"
-LON="-79.3884"
+CITY="Whitby, Ontario"
+LAT="43.898"
+LON="-78.939"
 #######################################
 
 # Function to convert Environment Canada icon code to Linux weather icon name
