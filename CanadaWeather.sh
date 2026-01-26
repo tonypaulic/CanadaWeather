@@ -418,6 +418,7 @@ Sunset\t\t${SUNSET}
 Moon Phase:\t${MOON_PHASE}"
 
 TOOLTIP="${TOOLTIP}
+
 $(printf "%s\n" "${DAY_FORECASTS[@]}")"
 
 if [ ! -z $WATCHES_ALERTS_TITLE ]; then
