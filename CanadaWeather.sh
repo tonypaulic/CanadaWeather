@@ -413,7 +413,7 @@ Visibility:\t\t${VISIBILITY}
 Wind:\t\t${WIND}
 
 Sunrise:\t\t${SUNRISE}
-Sunset\t\t${SUNSET}
+Sunset:\t\t${SUNSET}
 
 Moon Phase:\t${MOON_PHASE}"
 
