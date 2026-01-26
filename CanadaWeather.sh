@@ -400,7 +400,7 @@ while [ ${#DAY_FORECASTS[@]} -lt 5 ]; do	# get the next 5 summary entries
 done
 
 # Build tooltip
-TOOLTIP="<big><b>${CITY}\t${TEMPERATURE} °C and ${CONDITION}</b></big>
+TOOLTIP="<big><b>${CITY}\t\t${TEMPERATURE} °C and ${CONDITION}</b></big>
 
 Feels Like:\t${FEELS_LIKE}"
 
