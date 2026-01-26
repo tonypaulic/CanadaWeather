@@ -418,10 +418,15 @@ Sunset\t\t${SUNSET}
 Moon Phase:\t${MOON_PHASE}"
 
 TOOLTIP="${TOOLTIP}
+$(printf "%s\n" "${DAY_FORECASTS[@]}")"
 
-$(printf "%s\n" "${DAY_FORECASTS[@]}")
-<i>${WATCHES_ALERTS_TITLE}</i>
+if [ ! -z $WATCHES_ALERTS_TITLE ]; then
+	TOOLTIP="${TOOLTIP}
+	<i>${WATCHES_ALERTS_TITLE}</i>
+	"
+fi
 
+TOOLTIP="${TOOLTIP}
 <small><i>Observed at: ${OBSERVED_AT}
 Source: Weather and Climate Change Canada (weather.gc.ca)</i></small>"
 
