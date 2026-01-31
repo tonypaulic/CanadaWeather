@@ -7,6 +7,8 @@
 CITY="Whitby, Ontario"
 LAT="43.898"
 LON="-78.939"
+MOONPHASE_REF_DATE="Jan 21 2023"
+MOONPHASE_REF_PERCENT=0
 #######################################
 
 # Function to convert Environment Canada icon code to Linux weather icon name
@@ -159,16 +161,12 @@ get_feels_like() {
 
 # Function to calculate moon phase using astronomical algorithm
 calculate_moon_phase() {
-    # Reference date & phase
-    local REF_DATE="Jan 15 2023"
-    local REF_PERCENT=75
-
     # Constants
     local SEC_PER_DAY=86400
     local SYNODIC_SECONDS=2551443
 
     # Convert Reference date to epoch
-    local REF_EPOCH=`date --date "$REF_DATE" +%s`
+    local REF_EPOCH=`date --date "$MOONPHASE_REF_DATE" +%s`
 
     # Get current epoch
     local NOW_EPOCH=`date +%s`
@@ -180,7 +178,7 @@ calculate_moon_phase() {
     local CENTI_MOONS=$((100 * $SEC_DIFF / $SYNODIC_SECONDS))
 
     # Calculate Moon Percent
-    local MOON_PERCENT=$((($CENTI_MOONS + $REF_PERCENT) % 100))
+    local MOON_PERCENT=$((($CENTI_MOONS + $MOONPHASE_REF_PERCENT) % 100))
 
     echo "$MOON_PERCENT"
 }
