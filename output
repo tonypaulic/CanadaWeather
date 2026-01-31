@@ -1,0 +1,31 @@
+<icon>weather-snow</icon>
+<iconclick>xfce-open https://weather.gc.ca/en/location/index.html?coords=43.898,-78.939</iconclick>
+<txt>-12 °C</txt>
+<tool><big><b>Whitby, Ontario:	-11.5 °C and Light Snow</b></big>
+
+Feels Like:	<span foreground='#ADD8E6'>-19 °C</span>
+
+Air Quality:	2   <small>( Low Risk )</small>
+Humidity:		65 %
+Pressure:		102.5 kPa
+Visibility:		16 km
+Wind:		WNW 17 km/h
+
+Sunrise:		 7:35 am
+Sunset:		 5:23 pm
+
+Moon Phase:	🌔 Waxing Gibbous   <small><span foreground="#cccccc">( .39 illumination )</span></small>
+
+<b>Friday night:</b> Mainly cloudy. 30 percent chance of flurries this evening and after midnight. Wind northwest 20 km/h becoming light early this evening. Low minus 20. Wind chill minus 21 this evening and minus 27 overnight.
+
+<b>Saturday:</b> A mix of sun and cloud. Wind becoming north 20 km/h near noon. High minus 12. Wind chill minus 27 in the morning and minus 20 in the afternoon. UV index 1 or low.
+
+<b>Saturday night:</b> Clearing in the evening. Wind up to 15 km/h. Low minus 17. Wind chill minus 20 in the evening and minus 25 overnight.
+
+<b>Sunday:</b> Sunny. High minus 7.
+
+<b>Sunday night:</b> Clear. Low minus 17.
+
+<small><i>Observed at: Oshawa Executive Airport 6:03 PM EST Friday 30 January 2026
+Source: Weather and Climate Change Canada (weather.gc.ca)</i></small></tool>
+<css>.genmon_imagebutton image {-gtk-icon-transform: scale(1.4);}</css>
