@@ -202,23 +202,23 @@ get_moon_phase_name() {
     MOON_ILLUMINATION="${illumination%.*}"
     
     if (( $(echo "$phase_pct < 6.25" | bc -l) )); then
-        echo "🌑 New Moon   <small><span foreground=\"#333333\">( $phase illumination )</span></small>"
+        echo "🌑 New Moon   <small><span foreground=\"#333333\">( $MOON_ILLUMINATION% illumination )</span></small>"
     elif (( $(echo "$phase_pct < 18.75" | bc -l) )); then
-        echo "🌒 Waxing Crescent   <small><span foreground=\"#666666\">( $phase illumination )</span></small>"
+        echo "🌒 Waxing Crescent   <small><span foreground=\"#666666\">( $MOON_ILLUMINATION% illumination )</span></small>"
     elif (( $(echo "$phase_pct < 31.25" | bc -l) )); then
-        echo "🌓 First Quarter   <small><span foreground=\"#999999\">( $phase illumination )</span></small>"
+        echo "🌓 First Quarter   <small><span foreground=\"#999999\">( $MOON_ILLUMINATION% illumination )</span></small>"
     elif (( $(echo "$phase_pct < 43.75" | bc -l) )); then
-        echo "🌔 Waxing Gibbous   <small><span foreground=\"#cccccc\">( $phase illumination )</span></small>"
+        echo "🌔 Waxing Gibbous   <small><span foreground=\"#cccccc\">( $MOON_ILLUMINATION% illumination )</span></small>"
     elif (( $(echo "$phase_pct < 56.25" | bc -l) )); then
-        echo "🌕 Full Moon   <small><span foreground=\"#ffffff\">( $phase illumination )</span></small>"
+        echo "🌕 Full Moon   <small><span foreground=\"#ffffff\">( $MOON_ILLUMINATION% illumination )</span></small>"
     elif (( $(echo "$phase_pct < 68.75" | bc -l) )); then
-        echo "🌖 Waning Gibbous   <small><span foreground=\"#cccccc\">( $phase illumination )</span></small>"
+        echo "🌖 Waning Gibbous   <small><span foreground=\"#cccccc\">( $MOON_ILLUMINATION% illumination )</span></small>"
     elif (( $(echo "$phase_pct < 81.25" | bc -l) )); then
-        echo "🌗 Last Quarter   <small><span foreground=\"#999999\">( $phase illumination )</span></small>"
+        echo "🌗 Last Quarter   <small><span foreground=\"#999999\">( $MOON_ILLUMINATION% illumination )</span></small>"
     elif (( $(echo "$phase_pct < 93.75" | bc -l) )); then
-        echo "🌘 Waning Crescent   <small><span foreground=\"#666666\">( $phase illumination )</span></small>"
+        echo "🌘 Waning Crescent   <small><span foreground=\"#666666\">( $MOON_ILLUMINATION% illumination )</span></small>"
     else
-        echo "🌑 New Moon   <small><span foreground=\"#333333\">( $phase illumination )</span></small>"
+        echo "🌑 New Moon   <small><span foreground=\"#333333\">( $MOON_ILLUMINATION% illumination )</span></small>"
     fi
 }
 
