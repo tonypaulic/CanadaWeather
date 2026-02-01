@@ -125,7 +125,8 @@ get_feels_like() {
     local temp=$1
     local wind_chill=$2
     local humidex=$3
-	 local final
+	local final
+    local rounded
     
 	 # Determine which value to use
     if [ "$(is_winter_month)" = "true" ]; then
@@ -146,7 +147,6 @@ get_feels_like() {
 
 	 # 2. Standard Rounding (0.5 rounds up)
     # Adding 0.5 and truncating via 'int' is the standard math approach
-    local rounded
     rounded=$(awk "BEGIN {print int($final + ($final >= 0 ? 0.5 : -0.5))}")
 
     # 3. Pango color coding based on float limits (-15.0 and 29.5)
@@ -350,7 +350,7 @@ case $AIR_QUALITY in
 	0|1|2|3) 	AIR_QUALITY_TEXT="Low Risk" ;;
 	4|5|6)   	AIR_QUALITY_TEXT="<span foreground=\"yellow\">Moderate Risk</span>" ;;
 	7|8|9|10) 	AIR_QUALITY_TEXT="<span foreground=\"pink\">High Risk</span>" ;;
-	*)				AIR_QUALITY_TEXT="<span foreground=\"red\">Very High Risk</span>" ;;
+	*)			AIR_QUALITY_TEXT="<span foreground=\"red\">Very High Risk</span>" ;;
 esac
 
 # Calculate Humidex
