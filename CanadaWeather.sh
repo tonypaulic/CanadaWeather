@@ -420,11 +420,11 @@ TOOLTIP="${TOOLTIP}
 $(printf "%s\n" "${DAY_FORECASTS[@]}")"
 if [[ -n "${WATCHES_ALERTS_TITLE}" ]]; then
 	TOOLTIP="${TOOLTIP}
-<i>${WATCHES_ALERTS_TITLE}</i>"
+<i>${WATCHES_ALERTS_TITLE}
+</i>"
 fi
 
 TOOLTIP="${TOOLTIP}
-
 <small><i>Observed at: ${OBSERVED_AT}
 Source: Weather and Climate Change Canada (weather.gc.ca)</i></small>"
 
