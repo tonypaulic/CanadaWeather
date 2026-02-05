@@ -231,8 +231,8 @@ get_sun_times() {
 
 	# 2. Convert to "%l:%M %P" format
 	# Note: We add "today" so the date command recognizes it as a time
-	SUNRISE=$(date -d "$RAW_SUNRISE today" +"%l:%M %P")
-	SUNSET=$(date -d "$RAW_SUNSET today" +"%l:%M %P")
+	SUNRISE=$(date -d "$RAW_SUNRISE today" +"%-l:%M %P")
+	SUNSET=$(date -d "$RAW_SUNSET today" +"%-l:%M %P")
 }
 
 # Function to get moon phase information
