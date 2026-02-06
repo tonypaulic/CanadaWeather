@@ -264,7 +264,7 @@ FORECAST_XML=$(curl -s "$XML_URL")
 WATCHES_ALERTS_TITLE=$(echo "$FORECAST_XML" | awk -F'[<>]' '
 /entry/ {
     getline;
-    if (match($3, /YELLOW|ORANGE|RED|SPECIAL/)) {
+    if (match($3, /YELLOW|ORANGE|RED/)) {
         # 1. Capture the color name found
         color_name = substr($3, RSTART, RLENGTH);
         
@@ -272,7 +272,6 @@ WATCHES_ALERTS_TITLE=$(echo "$FORECAST_XML" | awk -F'[<>]' '
         if (color_name == "RED") hex = "#FF0000";
         else if (color_name == "ORANGE") hex = "#FFA500";
         else if (color_name == "YELLOW") hex = "#FFFF00";
-		else if (color_name == "SPECIAL") hex = "#DEDEDE";
 
         # 3. Process the text segment
         split($3, a, ",");
