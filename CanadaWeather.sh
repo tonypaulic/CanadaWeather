@@ -386,9 +386,9 @@ ALL_FORECASTS=$(echo "$FORECAST_XML" | tr -d '\n' | \
 
 # Get the next 3 day forecasts
 DAY_FORECASTS=()
-line_num=3  # Start after feed title, alerts, and current conditions
+line_num=4  # Start after feed title, alerts, and current conditions
 
-while [ ${#DAY_FORECASTS[@]} -lt 6 ]; do	# get the next 6 summary entries
+while [ ${#DAY_FORECASTS[@]} -lt 5 ]; do	# get the next 6 summary entries
     forecast=$(echo "$ALL_FORECASTS" | sed -n "${line_num}p")
     DAY_FORECASTS+=("$forecast\n")
     
