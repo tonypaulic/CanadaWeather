@@ -9,6 +9,7 @@ LAT="43.898"
 LON="-78.939"
 MOONPHASE_REF_DATE="Jan 21 2023"
 MOONPHASE_REF_PERCENT=0
+LINE=$(printf '<u>%*s</u>' 140 "")
 #######################################
 
 # Function to convert Environment Canada icon code to Linux weather icon name
@@ -416,11 +417,12 @@ Wind:\t\t${WIND}
 Sunrise:\t\t${SUNRISE}
 Sunset:\t\t${SUNSET}
 
-Moon Phase:\t${MOON_PHASE}"
+Moon Phase:\t${MOON_PHASE}
+$LINE"
 
 TOOLTIP="${TOOLTIP}
 
-$(printf "%s\n" "${DAY_FORECASTS[@]}")"
+$(printf "%s\n" "${DAY_FORECASTS[@]}")$LINE\n"
 if [[ -n "${WATCHES_ALERTS_TITLE}" ]]; then
 	TOOLTIP="${TOOLTIP}
 <i>${WATCHES_ALERTS_TITLE}
