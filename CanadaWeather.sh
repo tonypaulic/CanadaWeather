@@ -384,7 +384,7 @@ ALL_FORECASTS=$(echo "$FORECAST_XML" | tr -d '\n' | \
 	sed 's/Forecast issued.*$//g' | \
 	sed 's/[[:space:]]*$/<\/small>/')
 
-# Get the next 3 day forecasts
+# Get the next 2.5 day forecasts
 DAY_FORECASTS=()
 line_num=4  # Start after feed title, alerts, and current conditions
 
