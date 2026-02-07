@@ -322,7 +322,7 @@ TEMPERATURE_ROUNDED=$(echo "$SUMMARY" | \
   xargs printf "%.0f")
 
 PRESSURE=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Pressure:<\/b>\s*\([^<]*\)<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Pressure\( \/ Tendency\)\?:<\/b> \([^<]*\)<br\/>.*/\2/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 VISIBILITY=$(echo "$SUMMARY" | \
