@@ -376,10 +376,10 @@ LINUX_ICON=$(convert_to_linux_icon "$WEATHER_ICON" "$NIGHT_CHECK")
 # Extract all forecast titles and summaries. Get the day from the title and the summary content minus Forcast issued...
 ALL_FORECASTS=$(echo "$FORECAST_XML" | tr -d '\n' | \
 	sed 's/<entry>/\n<entry>/g' | \
-	sed -n 's/.*<title>\([^:]*:\).*<summary[^>]*>\(.*\)<\/summary>.*/<b>\1<\/b> \2/p' | \
+	sed -n 's/.*<title>\([^:]*:\).*<summary[^>]*>\(.*\)<\/summary>.*/<b>\1<\/b> <small>\2/p' | \
 	sed 's/&lt;br\/&gt;/ /g' | \
 	sed 's/Forecast issued.*$//g' | \
-	sed 's/[[:space:]]*$//')
+	sed 's/[[:space:]]*$/<\/small>/')
 
 # Get the next 3 day forecasts
 DAY_FORECASTS=()
