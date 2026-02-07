@@ -37,7 +37,7 @@ convert_to_linux_icon() {
         05|06|28)  # Mainly cloudy / Increasing cloud
             echo "weather-clouds"
             ;;
-        12|13|28|39)  # Rain / Drizzle / Showers
+        08|12|13|28|39)  # Rain / Drizzle / Showers
             echo "weather-showers"
             ;;
         09)  # Thunderstorms
@@ -46,15 +46,18 @@ convert_to_linux_icon() {
         15|16|17|18|26|27)  # Snow / Flurries / Ice pellets
             echo "weather-snow"
             ;;
-        07|14|19)  # Freezing rain / Rain and snow
+        07|14|19|20|21)  # Freezing rain / Rain and snow
             echo "weather-showers-scattered"
             ;;
         11)  # Rain showers or flurries
             echo "weather-showers-scattered"
             ;;
-        22|23|24|44|45|46|47|48)  # Haze / Smoke / Fog
+        22|23|24|25|44|45|46|47|48)  # Haze / Smoke / Fog
             echo "weather-fog"
             ;;
+		40|43)  # windy, blowing
+			echo "weather-windy"
+			;;
         *)  # Default
             echo "weather-severe-alert"
             ;;
