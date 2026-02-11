@@ -320,6 +320,7 @@ TEMPERATURE_ROUNDED=$(echo "$SUMMARY" | \
   sed -n 's/.*<b>Temperature:<\/b>\s*\([^<]*\)&deg;C<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
   xargs printf "%.0f")
+TEMPERATURE_ROUNDED=$((TEMPERATURE_ROUNDED + 0))
 
 PRESSURE=$(echo "$SUMMARY" | \
   sed -n 's/.*<b>Pressure\( \/ Tendency\)\?:<\/b> \([^<]*\)<br\/>.*/\2/p' | \
