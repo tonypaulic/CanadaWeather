@@ -2,6 +2,7 @@
 #
 # Genmon weather script to fetch Canadian weather data from weather.gc.ca
 # Requires: xfce4-genmon-plugin bc curl
+# Cross-platform: Works on both Linux (GNU) and BSD systems
 
 ### Change these to suit ##############
 CITY="Whitby, Ontario"
@@ -11,6 +12,48 @@ MOONPHASE_REF_DATE="Jan 21 2023"
 MOONPHASE_REF_PERCENT=0
 LINE=$(printf '<u>%*s</u>' 140 "")
 #######################################
+
+# Detect OS type for platform-specific commands
+detect_os() {
+    case "$(uname -s)" in
+        Linux*)     echo "linux" ;;
+        FreeBSD*)   echo "bsd" ;;
+        OpenBSD*)   echo "bsd" ;;
+        NetBSD*)    echo "bsd" ;;
+        Darwin*)    echo "bsd" ;;
+        *)          echo "unknown" ;;
+    esac
+}
+
+OS_TYPE=$(detect_os)
+
+# Platform-specific date command wrapper for parsing dates
+parse_date_to_epoch() {
+    local date_string="$1"
+    
+    if [ "$OS_TYPE" = "linux" ]; then
+        date --date "$date_string" +%s 2>/dev/null
+    else
+        # BSD date uses -j -f format
+        # Try to parse common formats
+        date -j -f "%b %d %Y" "$date_string" +%s 2>/dev/null || \
+        date -j -f "%Y-%m-%d %H:%M" "$date_string" +%s 2>/dev/null || \
+        date -j -f "%H:%M" "$date_string" +%s 2>/dev/null
+    fi
+}
+
+# Platform-specific date command for formatting time
+format_time() {
+    local time_24h="$1"
+    
+    if [ "$OS_TYPE" = "linux" ]; then
+        date -d "$time_24h today" +"%-l:%M %P" 2>/dev/null
+    else
+        # BSD date: parse the time and format it
+        # Use -j to avoid setting system clock, -f to specify input format
+        date -j -f "%H:%M" "$time_24h" "+%l:%M %p" 2>/dev/null | sed 's/^ *//'
+    fi
+}
 
 # Function to convert Environment Canada icon code to Linux weather icon name
 convert_to_linux_icon() {
@@ -74,8 +117,38 @@ is_nighttime() {
     local current_seconds=$(date +%s)
     
     # Convert sunrise and sunset to seconds since epoch (today's date)
-    local sunrise_seconds=$(date -d "$(date +%Y-%m-%d) $sunrise_time" +%s 2>/dev/null)
-    local sunset_seconds=$(date -d "$(date +%Y-%m-%d) $sunset_time" +%s 2>/dev/null)
+    local sunrise_seconds
+    local sunset_seconds
+    
+    if [ "$OS_TYPE" = "linux" ]; then
+        local today=$(date +%Y-%m-%d)
+        sunrise_seconds=$(date -d "$today $sunrise_time" +%s 2>/dev/null)
+        sunset_seconds=$(date -d "$today $sunset_time" +%s 2>/dev/null)
+    else
+        # BSD: Extract hour and minute from formatted time (e.g., "7:30 am" or "5:45 pm")
+        # Convert back to 24-hour format for date parsing
+        local sunrise_24h=$(echo "$sunrise_time" | awk '{
+            split($1, t, ":");
+            h = t[1]; m = t[2];
+            ampm = tolower($2);
+            if (ampm == "pm" && h != 12) h += 12;
+            if (ampm == "am" && h == 12) h = 0;
+            printf "%02d:%02d", h, m;
+        }')
+        local sunset_24h=$(echo "$sunset_time" | awk '{
+            split($1, t, ":");
+            h = t[1]; m = t[2];
+            ampm = tolower($2);
+            if (ampm == "pm" && h != 12) h += 12;
+            if (ampm == "am" && h == 12) h = 0;
+            printf "%02d:%02d", h, m;
+        }')
+        
+        # Get today's date and construct full datetime strings
+        local today=$(date +%Y%m%d)
+        sunrise_seconds=$(date -j -f "%Y%m%d%H:%M" "${today}${sunrise_24h}" +%s 2>/dev/null)
+        sunset_seconds=$(date -j -f "%Y%m%d%H:%M" "${today}${sunset_24h}" +%s 2>/dev/null)
+    fi
     
     # If conversion failed, fall back to simple hour check
     if [ -z "$sunrise_seconds" ] || [ -z "$sunset_seconds" ]; then
@@ -170,10 +243,10 @@ calculate_moon_phase() {
     local SYNODIC_SECONDS=2551443
 
     # Convert Reference date to epoch
-    local REF_EPOCH=`date --date "$MOONPHASE_REF_DATE" +%s`
+    local REF_EPOCH=$(parse_date_to_epoch "$MOONPHASE_REF_DATE")
 
     # Get current epoch
-    local NOW_EPOCH=`date +%s`
+    local NOW_EPOCH=$(date +%s)
 
     # Calculate difference between now and reference
     local SEC_DIFF=$(($NOW_EPOCH - $REF_EPOCH))
@@ -229,14 +302,13 @@ get_sun_times() {
 	# Fetch the source
 	DATA=$(curl -s "https://weather.gc.ca/en/location/index.html?coords=${LAT},${LON}")
 
-	# 1. Extract raw 24-hour times
-	RAW_SUNRISE=$(echo "$DATA" | sed -n 's/.*Sunrise:<\/dt><dd[^>]*>\([0-9]\{1,2\}:[0-9]\{2\}\).*/\1/p')
-	RAW_SUNSET=$(echo "$DATA" | sed -n 's/.*Sunset:<\/dt><dd[^>]*>\([0-9]\{1,2\}:[0-9]\{2\}\).*/\1/p')
+	# 1. Extract raw 24-hour times (BSD-compatible sed)
+	RAW_SUNRISE=$(echo "$DATA" | sed -n 's/.*Sunrise:<\/dt><dd[^>]*>\([0-9][0-9]*:[0-9][0-9]\).*/\1/p')
+	RAW_SUNSET=$(echo "$DATA" | sed -n 's/.*Sunset:<\/dt><dd[^>]*>\([0-9][0-9]*:[0-9][0-9]\).*/\1/p')
 
-	# 2. Convert to "%l:%M %P" format
-	# Note: We add "today" so the date command recognizes it as a time
-	SUNRISE=$(date -d "$RAW_SUNRISE today" +"%-l:%M %P")
-	SUNSET=$(date -d "$RAW_SUNSET today" +"%-l:%M %P")
+	# 2. Convert to human-readable format
+	SUNRISE=$(format_time "$RAW_SUNRISE")
+	SUNSET=$(format_time "$RAW_SUNSET")
 }
 
 # Function to get moon phase information
@@ -304,50 +376,50 @@ SUMMARY=$(echo "$CURRENT_CONDITIONS" | \
   tr '\n' ' ' | \
   sed 's/.*<!\[CDATA\[\(.*\)\]\]>.*/\1/')
 
-# Parse individual fields from the summary
+# Parse individual fields from the summary (BSD-compatible patterns)
 OBSERVED_AT=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Observed at:<\/b>\s*\([^<]*\)<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Observed at:<\/b>[[:space:]]*\([^<]*\)<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 CONDITION=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Condition:<\/b>\s*\([^<]*\)<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Condition:<\/b>[[:space:]]*\([^<]*\)<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 TEMPERATURE=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Temperature:<\/b>\s*\([^<]*\)&deg;C<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Temperature:<\/b>[[:space:]]*\([^<]*\)&deg;C<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 TEMPERATURE_ROUNDED=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Temperature:<\/b>\s*\([^<]*\)&deg;C<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Temperature:<\/b>[[:space:]]*\([^<]*\)&deg;C<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
   xargs printf "%.0f")
 TEMPERATURE_ROUNDED=$((TEMPERATURE_ROUNDED + 0))
 
 PRESSURE=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Pressure\( \/ Tendency\)\?:<\/b> \([^<]*\)<br\/>.*/\2/p' | \
+  sed -n 's/.*<b>Pressure\( \/ Tendency\)\{0,1\}:<\/b> \([^<]*\)<br\/>.*/\2/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 VISIBILITY=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Visibility:<\/b>\s*\([^<]*\)<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Visibility:<\/b>[[:space:]]*\([^<]*\)<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 HUMIDITY=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Humidity:<\/b>\s*\([^<]*\)<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Humidity:<\/b>[[:space:]]*\([^<]*\)<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 WIND_CHILL=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Wind Chill:<\/b>\s*\([^<]*\)<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Wind Chill:<\/b>[[:space:]]*\([^<]*\)<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 DEWPOINT=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Dewpoint:<\/b>\s*\([^<]*\)&deg;C<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Dewpoint:<\/b>[[:space:]]*\([^<]*\)&deg;C<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 WIND=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Wind:<\/b>\s*\([^<]*\)<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Wind:<\/b>[[:space:]]*\([^<]*\)<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 AIR_QUALITY=$(echo "$SUMMARY" | \
-  sed -n 's/.*<b>Air Quality Health Index:<\/b>\s*\([^<]*\)<br\/>.*/\1/p' | \
+  sed -n 's/.*<b>Air Quality Health Index:<\/b>[[:space:]]*\([^<]*\)<br\/>.*/\1/p' | \
   sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 # Get Air quality text and colour code ouput
@@ -380,7 +452,8 @@ LINUX_ICON=$(convert_to_linux_icon "$WEATHER_ICON" "$NIGHT_CHECK")
 
 # Extract all forecast titles and summaries. Get the day from the title and the summary content minus Forcast issued...
 ALL_FORECASTS=$(echo "$FORECAST_XML" | tr -d '\n' | \
-	sed 's/<entry>/\n<entry>/g' | \
+	sed 's/<entry>/\
+<entry>/g' | \
 	sed -n 's/.*<title>\([^:]*:\).*<summary[^>]*>\(.*\)<\/summary>.*/<b>\1<\/b> <small>\2/p' | \
 	sed 's/&lt;br\/&gt;/ /g' | \
 	sed 's/Forecast issued.*$//g' | \
