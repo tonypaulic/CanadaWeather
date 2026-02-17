@@ -1,0 +1,23 @@
+--- CanadaWeather.sh	2026-02-17 02:37:50.204140840 +0000
++++ CanadaWeather.sh	2026-02-17 02:38:13.024402034 +0000
+@@ -459,9 +459,18 @@
+ 	sed 's/Forecast issued.*$//g' | \
+ 	sed 's/[[:space:]]*$/<\/small>/')
+ 
+-# Get the next 2.5 day forecasts
++# Get the next 5 forecasts after "Current Conditions"
+ DAY_FORECASTS=()
+-line_num=3  # Start after feed title, alerts, and current conditions
++
++# Find the line number where "Current Conditions" appears
++current_conditions_line=$(echo "$ALL_FORECASTS" | grep -n "Current Conditions" | cut -d: -f1)
++
++# If found, start after it; otherwise start at line 3 (fallback to old behavior)
++if [ -n "$current_conditions_line" ]; then
++    line_num=$((current_conditions_line + 1))
++else
++    line_num=3
++fi
+ 
+ while [ ${#DAY_FORECASTS[@]} -lt 5 ]; do	# get the next 5 summary entries
+     forecast=$(echo "$ALL_FORECASTS" | sed -n "${line_num}p")
