@@ -424,6 +424,7 @@ AIR_QUALITY=$(echo "$SUMMARY" | \
 
 # Get Air quality text and colour code ouput
 case $AIR_QUALITY in
+	"n/a")		AIR_QUALITY_TEXT="unknown" ;;
 	0|1|2|3) 	AIR_QUALITY_TEXT="Low Risk" ;;
 	4|5|6)   	AIR_QUALITY_TEXT="<span foreground=\"yellow\">Moderate Risk</span>" ;;
 	7|8|9|10) 	AIR_QUALITY_TEXT="<span foreground=\"pink\">High Risk</span>" ;;
