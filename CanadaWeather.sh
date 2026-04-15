@@ -84,13 +84,13 @@ convert_to_linux_icon() {
         08|12|13|28|39)  # Rain / Drizzle / Showers
             echo "weather-showers"
             ;;
-        09)  # Thunderstorms
+        09|19)  # Thunderstorms
             echo "weather-storm"
             ;;
         15|16|17|18|26|27)  # Snow / Flurries / Ice pellets
             echo "weather-snow"
             ;;
-        07|14|19|20|21)  # Freezing rain / Rain and snow
+        07|14|20|21)  # Freezing rain / Rain and snow
             echo "weather-showers-scattered"
             ;;
         11)  # Rain showers or flurries
